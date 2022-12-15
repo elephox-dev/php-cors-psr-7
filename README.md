@@ -1,30 +1,31 @@
-# CORS for PHP (using the Symfony HttpFoundation)
+# CORS for PHP (using the PSR-7 HTTP message interfaces)
 
-[![Unit Tests](https://github.com/fruitcake/php-cors/actions/workflows/run-tests.yml/badge.svg)](https://github.com/fruitcake/php-cors/actions)
-[![PHPStan Level 9](https://img.shields.io/badge/PHPStan-Level%209-blue)](https://github.com/fruitcake/php-cors/actions)
-[![Code Coverage](https://img.shields.io/badge/CodeCoverage-100%25-brightgreen)](https://github.com/fruitcake/php-cors/actions/workflows/run-coverage.yml)
+[![Unit Tests](https://github.com/elephox-dev/php-cors-psr-7/actions/workflows/run-tests.yml/badge.svg)](https://github.com/fruitcake/php-cors/actions)
+[![PHPStan Level 9](https://img.shields.io/badge/PHPStan-Level%209-blue)](https://github.com/elephox-dev/php-cors-psr-7/actions)
+[![Code Coverage](https://img.shields.io/badge/CodeCoverage-100%25-brightgreen)](https://github.com/elephox-dev/php-cors-psr-7/actions/workflows/run-coverage.yml)
 [![Packagist License](https://poser.pugx.org/fruitcake/php-cors/license.png)](http://choosealicense.com/licenses/mit/)
 [![Latest Stable Version](https://poser.pugx.org/fruitcake/php-cors/version.png)](https://packagist.org/packages/fruitcake/php-cors)
 [![Total Downloads](https://poser.pugx.org/fruitcake/php-cors/d/total.png)](https://packagist.org/packages/fruitcake/php-cors)
 [![Fruitcake](https://img.shields.io/badge/Powered%20By-Fruitcake-b2bc35.svg)](https://fruitcake.nl/)
 
-Library and middleware enabling cross-origin resource sharing for your
-http-{foundation,kernel} using application. It attempts to implement the
-[W3C Recommendation] for cross-origin resource sharing.
+Library and middleware enabling cross-origin resource sharing.
+It attempts to implement the [W3C Recommendation] for cross-origin resource sharing.
 
 [W3C Recommendation]: http://www.w3.org/TR/cors/
 
-> Note: This is a standalone fork of https://github.com/asm89/stack-cors and is compatible with the options for CorsService.
+> Note: This is a standalone ~~fork of https://github.com/asm89/stack-cors~~ fork of https://github.com/fruitcake/php-cors and is ~~compatible~~ almost compatible with the options for CorsService.  
+> You need to pass an instance of a PSR-17 HTTP message factory as the first argument. It is used to generate the CORS responses.
+
 ## Installation
 
-Require `fruitcake/php-cors` using composer.
+Require `fruitcake/php-cors` using composer, add this repository as a git source and choose the `dev-feature/psr-7-rewrite` version.
 
 ## Usage
 
-This package can be used as a library. You can use it in your framework using:
+This package can be used as a library. ~~You can use it in your framework using:~~
 
- - [Stack middleware](http://stackphp.com/): https://github.com/asm89/stack-cors
- - [Laravel](https://laravel.com): https://github.com/fruitcake/laravel-cors
+ - ~~[Stack middleware](http://stackphp.com/): https://github.com/asm89/stack-cors~~
+ - ~~[Laravel](https://laravel.com): https://github.com/fruitcake/laravel-cors~~
  
 
 ### Options
@@ -54,7 +55,9 @@ If `['*']` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHeaders_
 
 use Fruitcake\Cors\CorsService;
 
-$cors = new CorsService([
+$cors = new CorsService(
+  new PSR17Factory(),
+  [
     'allowedHeaders'         => ['x-allowed-header', 'x-other-allowed-header'],
     'allowedMethods'         => ['DELETE', 'GET', 'POST', 'PUT'],
     'allowedOrigins'         => ['http://localhost', 'https://*.example.com'],
@@ -62,7 +65,8 @@ $cors = new CorsService([
     'exposedHeaders'         => ['Content-Encoding'],
     'maxAge'                 => 0,
     'supportsCredentials'    => false,
-]);
+  ]
+);
 
 $cors->addActualRequestHeaders(Response $response, $origin);
 $cors->handlePreflightRequest(Request $request);
